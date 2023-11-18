@@ -62,7 +62,6 @@ func main() {
 		port = "8081"
 	}
 	fmt.Println("Hello World, changed")
-	http.HandleFunc("/sendmail", sendMail)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/sendmail", sendMail)
 	http.ListenAndServe(":"+port, mux)
