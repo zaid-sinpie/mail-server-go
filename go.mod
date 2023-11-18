@@ -24,6 +24,7 @@ require (
 	github.com/mailhog/storage v1.0.1 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/rs/cors v1.10.1 // indirect
 	github.com/t-k/fluent-logger-golang v1.0.0 // indirect
 	github.com/tinylib/msgp v1.1.9 // indirect
 	golang.org/x/crypto v0.15.0 // indirect

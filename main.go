@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"net/http"
 	"net/smtp"
 	"os"
-    "github.com/joho/godotenv"
 )
+
 var envFile, _ = godotenv.Read(".env")
+
 type Viewer struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
@@ -17,26 +19,28 @@ type Viewer struct {
 }
 
 func sendMail(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Access-Control-Allow-Origin", "*")
+	// Set CORS headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	var viewer Viewer
 	err := json.NewDecoder(r.Body).Decode(&viewer)
 	if err != nil {
 		fmt.Println("Request wasn't properly decoded")
-        return
+		return
 	}
-    fmt.Println(viewer)
+	fmt.Println(viewer)
 	from := envFile["FROM_GMAIL"]
-    if from == "" {
-        from = os.Getenv("FROM_GMAIL")
-    }
-    password := envFile["GMAIL_PASSWORD"]
-    if password == "" {
-        password = os.Getenv("GMAIL_PASSWORD")
-    }
-    to := envFile["TO_GMAIL"]
-    if to == "" {
-        to = os.Getenv("TO_GMAIL")
-    }
+	if from == "" {
+		from = os.Getenv("FROM_GMAIL")
+	}
+	password := envFile["GMAIL_PASSWORD"]
+	if password == "" {
+		password = os.Getenv("GMAIL_PASSWORD")
+	}
+	to := envFile["TO_GMAIL"]
+	if to == "" {
+		to = os.Getenv("TO_GMAIL")
+	}
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
 	subject := viewer.Subject
@@ -48,16 +52,18 @@ func sendMail(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Something went wrong", err)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	fmt.Println("Success")
 }
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8081"
 	}
-	fmt.Println("Hello World")
+	fmt.Println("Hello World, changed")
 	http.HandleFunc("/sendmail", sendMail)
-	http.ListenAndServe(":"+port, nil)
-
+	mux := http.NewServeMux()
+	mux.HandleFunc("/sendmail", sendMail)
+	http.ListenAndServe(":"+port, mux)
 }
