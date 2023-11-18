@@ -24,20 +24,25 @@ func sendMail(w http.ResponseWriter, r *http.Request) {
         return
 	}
     fmt.Println(viewer)
-	from := "dulangeraviraj@gmail.com"
+	from := envFile["FROM_GMAIL"]
+    if from == "" {
+        from = os.Getenv("FROM_GMAIL")
+    }
     password := envFile["GMAIL_PASSWORD"]
     if password == "" {
         password = os.Getenv("GMAIL_PASSWORD")
     }
-    fmt.Println("Password = ", password)
-	to := []string{"zaidmasuldar@gmail.com", "dulangeraviraj@gmail.com"}
+    to := envFile["TO_GMAIL"]
+    if to == "" {
+        to = os.Getenv("TO_GMAIL")
+    }
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
 	subject := viewer.Subject
 	body := viewer.Content
 	message := fmt.Sprintf("Subject: %s(%s)\r\n\r\n%s", subject, viewer.Email, body)
 	auth := smtp.PlainAuth("", from, password, smtpHost)
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(message))
+	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, []byte(message))
 	if err != nil {
 		fmt.Println("Something went wrong", err)
 		return
