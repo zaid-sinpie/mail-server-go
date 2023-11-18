@@ -17,6 +17,7 @@ type Viewer struct {
 }
 
 func sendMail(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Origin", "*")
 	var viewer Viewer
 	err := json.NewDecoder(r.Body).Decode(&viewer)
 	if err != nil {
